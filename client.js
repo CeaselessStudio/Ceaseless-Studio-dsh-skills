@@ -480,10 +480,14 @@ window.__ModuleLoader__.load({
             let entry
             try {
               const response = await fetch(url, { cache: 'no-store' })
-              const body = await response.json()
-              entry = body.ok
-                ? { content: body.content ?? '', truncated: Boolean(body.truncated) }
-                : { error: body.error }
+              // маршрут может отсутствовать (старая версия хоста) - тогда тело не JSON
+              const body = await response.json().catch(() => null)
+              entry =
+                body === null
+                  ? { error: `маршрут недоступен (HTTP ${response.status})` }
+                  : body.ok
+                    ? { content: body.content ?? '', truncated: Boolean(body.truncated) }
+                    : { error: body.error }
             } catch (error) {
               entry = { error: String(error?.message ?? error) }
             }
