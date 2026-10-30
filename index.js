@@ -12,6 +12,9 @@
  *
  *   GET /plugin/skills               - запасной каталог (без файловых скиллов)
  *   GET /plugin/skills/file?path=... - текст SKILL.md по пути
+ *   GET /plugin/skills/item?name=... - текст скилла из реестра, когда файла нет:
+ *                                      встроенные скиллы плагинов лежат в assets
+ *                                      и операционного пути у них не бывает
  */
 
 import { appendFileSync } from 'node:fs'
@@ -23,6 +26,7 @@ const HERE = dirname(fileURLToPath(import.meta.url))
 
 const LIST_ROUTE = '/plugin/skills'
 const FILE_ROUTE = '/plugin/skills/file'
+const ITEM_ROUTE = '/plugin/skills/item'
 const DEFAULT_TTL_MS = 30000
 const MAX_CONTENT_CHARS = 512 * 1024
 
@@ -201,6 +205,41 @@ export function apply(ctx, config = {}) {
     }
   }
 
+  /**
+   * Текст скилла из реестра, когда пути на диске нет: встроенные скиллы плагинов
+   * лежат внутри их assets и операционным путём не адресуются. Тело отдаёт сам
+   * провайдер, поэтому разбирать формат не нужно.
+   */
+  const itemHandler = async (request, response) => {
+    const url = new URL(request.url ?? ITEM_ROUTE, 'http://localhost')
+    const name = url.searchParams.get('name') ?? ''
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) {
+      sendJson(response, 400, { ok: false, error: 'некорректное имя скилла' })
+      return
+    }
+
+    // проектные скиллы видны только в cwd своего воркспейса, встроенные - всегда
+    for (const cwd of [...candidateCwds()]) {
+      try {
+        const skill = await ctx.skills.get(name, cwd === undefined ? {} : { cwd })
+        if (skill === undefined || typeof skill.content !== 'string') continue
+        sendJson(response, 200, {
+          ok: true,
+          name: skill.name,
+          path: skill.path ?? null,
+          provider: skill.provider ?? null,
+          truncated: skill.content.length > MAX_CONTENT_CHARS,
+          content: skill.content.slice(0, MAX_CONTENT_CHARS),
+        })
+        return
+      } catch (error) {
+        log(`скилл ${name} не открылся: ${text(error?.message ?? error)}`)
+      }
+    }
+
+    sendJson(response, 404, { ok: false, error: `скилл "${name}" не отдаёт текст` })
+  }
+
   const registerRoute = (server, path, handler) => {
     if (!server || typeof server.register !== 'function') {
       log('сервис webServer без метода register')
@@ -218,6 +257,7 @@ export function apply(ctx, config = {}) {
     ctx.effect(() => {
       const disposeList = registerRoute(ctx.webServer, LIST_ROUTE, listHandler)
       const disposeFile = registerRoute(ctx.webServer, FILE_ROUTE, fileHandler)
+      const disposeItem = registerRoute(ctx.webServer, ITEM_ROUTE, itemHandler)
 
       ensureFresh(true)
 
@@ -235,6 +275,7 @@ export function apply(ctx, config = {}) {
       return () => {
         disposeList()
         disposeFile()
+        disposeItem()
         disposeChange()
       }
     })

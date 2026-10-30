@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Клиентская половина плагина «Скиллы».
  *
  * Кнопка «Скиллы» в шапке чата: счётчик и поповер с каталогом. Каталог приходит
@@ -18,6 +18,7 @@ window.__ModuleLoader__.load({
     const { useCallback, useEffect, useMemo, useRef, useState } = React
 
     const FILE_ENDPOINT = '/plugin/skills/file'
+    const ITEM_ENDPOINT = '/plugin/skills/item'
     const FALLBACK_ENDPOINT = '/plugin/skills'
     const CACHE_MS = 60000
 
@@ -468,18 +469,17 @@ window.__ModuleLoader__.load({
 
           const skill = stateRef.current.skills.find((item) => item.name === name)
           if (skill === undefined) return
-          if (!skill.path) {
-            putCache(name, { error: 'у этого скилла нет файла: текст приходит из плагина, а не с диска' })
-            return
-          }
+
+          // файл читаем по пути; у встроенных скиллов пути нет - тело отдаёт реестр хоста
+          const url = skill.path
+            ? `${FILE_ENDPOINT}?path=${encodeURIComponent(skill.path)}`
+            : `${ITEM_ENDPOINT}?name=${encodeURIComponent(name)}`
 
           putCache(name, { loading: true })
           void (async () => {
             let entry
             try {
-              const response = await fetch(`${FILE_ENDPOINT}?path=${encodeURIComponent(skill.path)}`, {
-                cache: 'no-store',
-              })
+              const response = await fetch(url, { cache: 'no-store' })
               const body = await response.json()
               entry = body.ok
                 ? { content: body.content ?? '', truncated: Boolean(body.truncated) }
