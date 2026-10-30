@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Skills">
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="#101014" stroke="#992D22" stroke-width="2"/>
+  <path d="M32 13l4.6 11.4 12.2.9-9.3 7.9 2.9 12-10.4-6.7-10.4 6.7 2.9-12-9.3-7.9 12.2-.9z" fill="#e6e6e6"/>
+  <rect x="18" y="45" width="12" height="4" rx="2" fill="#992D22"/>
+  <rect x="34" y="45" width="12" height="4" rx="2" fill="#484f58"/>
+</svg>

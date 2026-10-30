@@ -1,0 +1,48 @@
+{
+  "name": "@local/dsh-skills",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DeepSeek Harness plugin: a Skills button in the chat header that lists every installed skill, its source, who may invoke it, and the full SKILL.md text",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "skills"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CeaselessStudio/dsh-skills.git"
+  },
+  "homepage": "https://github.com/CeaselessStudio/dsh-skills#readme",
+  "bugs": {
+    "url": "https://github.com/CeaselessStudio/dsh-skills/issues"
+  }
+}
