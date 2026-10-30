@@ -41,8 +41,9 @@ host    index.js   →  запасной каталог ctx.skills.list({ cwd })
 Пакет - бандл: в `cordis.patch.yml` одна строка загрузчика.
 
 ```powershell
+git clone https://github.com/CeaselessStudio/dsh-skills ~\.dsh\local-plugins\dsh-skills
 cd ~\.dsh\profiles\desktop
-pnpm add "link:E:\!Cease Neverly\plugins\dsh-skills"
+pnpm add "link:$HOME\.dsh\local-plugins\dsh-skills"
 ```
 
 Затем добавьте `@local/dsh-skills` в `dsh.profile.bundles` в
