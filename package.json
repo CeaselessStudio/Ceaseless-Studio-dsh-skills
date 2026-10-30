@@ -25,7 +25,8 @@
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",
-    "icon.svg"
+    "icon.svg",
+    "LICENSE"
   ],
   "dsh": {
     "bundle": {
@@ -39,10 +40,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CeaselessStudio/dsh-skills.git"
+    "url": "git+https://github.com/CeaselessStudio/Ceaseless-Studio-dsh-skills.git"
   },
-  "homepage": "https://github.com/CeaselessStudio/dsh-skills#readme",
+  "homepage": "https://github.com/CeaselessStudio/Ceaseless-Studio-dsh-skills#readme",
   "bugs": {
-    "url": "https://github.com/CeaselessStudio/dsh-skills/issues"
+    "url": "https://github.com/CeaselessStudio/Ceaseless-Studio-dsh-skills/issues"
   }
 }
